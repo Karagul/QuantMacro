@@ -43,6 +43,21 @@ gen RK_All = 1 - LS_All
 
 tsline LS_All
 
+*********GROSS LABOUR SHARE**************
+import excel "/Users/Mridula/Documents/IDEA/MRes/Year 2/2018-19/Qauntitative Macroeconomics/Problem Set 2/USData.xls", sheet("US_D") firstrow
+gen time = yearly(Variable, "Y")
+format time %ty
+tsset time
+drop Variable
+
+drop if Y==. 
+
+gen theta_D = CE/(Y-PI)
+gen LS_PI_D = theta_D*PI
+gen wh_D = CE + LS_PI_D
+gen LS_All_D = wh_D/Y
+tsline LS_All_D 
+
 *********For the Corporate Sector*********
 //Import the Data
 import excel "/Users/Mridula/Documents/IDEA/MRes/Year 2/2018-19/Qauntitative Macroeconomics/Problem Set 2/CS_All.xls", sheet("Sheet1") firstrow
@@ -64,6 +79,17 @@ gen LS_CS = CS_CE/CS_Y
 
 tsline LS_CS
 
+*******GROSS LABOUR SHARE CS********
+import excel "/Users/Mridula/Documents/IDEA/MRes/Year 2/2018-19/Qauntitative Macroeconomics/Problem Set 2/USData.xls", sheet("US_CS_D") firstrow
+gen time = yearly(Variable, "Y")
+format time %ty
+tsset time
+drop Variable
+
+drop if Y==. 
+
+gen LS_All_D_CS = CE_CS/Y_CS
+tsline LS_All_D_CS 
 
 /*UNITED KINGDOM*/
 ******For the whole UK Economy*******
@@ -78,21 +104,27 @@ tsset time
 drop Time
 
 drop if Y==.
+rename Depreciation DEP
 
 // Generating the labour share without including PI 
 gen theta_UK= CE/(Y-PI)
+gen theta_UK_D= (CE+DEP)/(Y-PI + DEP) if time>=1987
 
 //Calculation of the Labour share for PI 
 gen LS_PI_UK = theta_UK*PI
+gen LS_PI_UK_D = theta_UK_D*PI
 
 //Creating WH
 gen wh_UK = CE + LS_PI_UK
+gen wh_UK_D = CE + LS_PI_UK_D
 
 //Labour share and capital share for the whole US Economy 
 gen LS_All_UK = wh_UK/Y
 gen RK_All_UK = 1 - LS_All_UK
+gen LS_All_UK_D = wh_UK_D/(Y + DEP)
 
 tsline LS_All_UK
+twoway (tsline LS_All_UK_D) (lfit LS_All_UK_D time)
 
 *********For the Corporate Sector*********
 //Import Data
